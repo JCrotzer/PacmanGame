@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pacman Demo</title>
+    <style type="text/css">
+        body {
+            background-color:black;
+            margin: 0;
+        }
+
+        div.nospaces {
+            margin: 0;
+            display:inline-block;
+        }
+
+        div.row div{
+            width: 20px;
+            height: 20px;
+            display: inline-block;
+        }
+
+        div {
+            line-height: 0px;
+        }
+
+        div.brick {
+            background-color: blue;
+        }
+
+        div.coin {
+            background: url('coin.png');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 50%;
+        }
+
+        div.empty {
+            
+        }
+
+        div#pacman {
+            background: url('pacman.gif');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover;
+            width: 20px;
+            height: 20px;
+            position: absolute;
+        }
+
+        div#ghost1 {
+            background: url('ghost1.gif');
+            background-position: 50% 50%;
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            position: absolute;
+            top: 100px;
+            left: 40px;
+            width: 20px;
+            height: 20px;
+        }
+
+        #world {
+            margin: 0;
+            overflow: hidden;
+        }
+        div#score {
+            border: 1px solid white;
+            width: 30px;
+            height: 20px;
+            color: white;
+            padding: 7px;
+            text-align: center;
+            position: absolute;
+            top: 10px;
+            left: 210px; 
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id ='world'></div>
+        <div id ='pacman'></div>
+        <div id="score">0</div>
+        <div id="ghost1"></div>
+    </div>
+
+    <script>
+
+// List of features to build
+
+//DONE 1) Have JS display the world of brick/coins/etc- DONE!!!
+//DONE 2) Have the pacman move up/down/left/right
+//DONE 3) Display score + increase score when pacman eats coin
+//DONE 4) Prevent pacman from going out of bounds
+// 5) Create ghosts
+
+    var world = [
+        [2,2,2,2,2,2,2,2,2,2],
+        [2,1,1,2,1,1,1,1,1,2],
+        [2,1,1,2,1,2,1,2,1,2],
+        [2,1,1,2,1,2,1,2,1,2],
+        [2,1,1,2,1,2,1,2,1,2],
+        [2,1,1,2,2,2,1,2,1,2],
+        [2,1,1,1,1,1,1,2,1,2],
+        [2,1,1,1,1,1,1,1,1,2],
+        [2,2,2,2,2,2,2,2,2,2]
+    ];
+    var score = 0;
+
+    var pacman = {
+        x: 1,
+        y: 1,
+        rotation: 0,
+        lives: 3
+    };
+    
+    var ghost1 = {
+        x: 80,
+        y: 40,
+        lives: 3
+    };
+
+    function displayWorld() {
+        var output = '';
+
+        for(var i=0; i<world.length; i++) {
+            output += "\n<div class='row'>\n";
+            for(var j=0; j<world[i].length; j++){
+                if(world[i][j] == 2)
+                    output += "<div class='brick'></div>";
+                else if(world[i][j] == 1)
+                    output += "<div class='coin'></div>";
+                else if(world[i][j] == 0)
+                    output += "<div class='empty'></div>";
+            }
+            output += "\n</div>";
+        }
+        // console.log(output);
+        document.getElementById('world').innerHTML = output;
+    }
+    function displayPacman() {
+        document.getElementById('pacman').style.top = pacman.y*20 +"px";
+        document.getElementById('pacman').style.left = pacman.x*20 +"px";
+    }
+    
+    function displayScore() {
+        document.getElementById('score').innerHTML = score;
+    }
+
+    function rotatePacman(deg) {
+        document.getElementById('pacman').style.transform = 'rotate(' + deg + 'deg)';
+    }
+
+    function displayGhosts() {
+        document.getElementById('ghost1').style.left = ghost1.x + 'px';
+        document.getElementById('ghost1').style.top = ghost1.y + 'px';
+
+        if(ghost1.x == pacman.x && ghost1.y == pacman.y) {
+            pacman.lives--;
+            displayScore();
+        }
+    }
+
+    // function moveGhosts(){
+    //     var xOrY = Math.floor(Math.random() * (10 - 0) + 0);
+    //     var upOrDown = Math.floor(Math.random() * (10 - 0) + 0);
+    //     var leftOrRight = Math.floor(Math.random() * (10 - 0) + 0);
+    //     if(xOrY >= 5){
+    //         console.log(xOrY);
+    //         if(upOrDown <= 0 && world[(ghost1.y)][(ghost1.x-1)] != 2){
+    //             ghost1.y --;
+    //         }
+    //         else if(upOrDown >= 5 && world[(ghost1.y)][(ghost1.x+1)] != 2){
+    //             ghost1.y ++;
+    //         }
+    //         else if(world[(ghost1.y-1)][(ghost1.x)] != 2){
+    //             ghost1.x --;
+    //         }
+    //         else if(world[(ghost1.y+1)][(ghost1.x)] != 2){
+    //             ghost1.x ++;
+    //         }
+    //         else {
+    //             xOrY = 0;
+    //         }
+    //     }
+    //     if(xOrY <= 0){
+    //         console.log(xOrY);
+    //     if(upOrDown == 1 && world[(ghost1.y) / 20][(ghost1.x - 20) / 20] != 2){
+    //         ghost1.x -= 20;
+    //     }
+    //     else if(upOrDown == 1 && world[(ghost1.y) / 20][(ghost1.x  + 20) / 20] != 2){
+    //         ghost1.x += 20;
+    //     }
+    // }
+    displayWorld();
+    displayPacman();
+    displayScore();
+    displayGhosts();
+
+    document.onkeydown = function(e) {
+        if(e.keyCode == 37 && world[pacman.y][pacman.x-1] !=2) {
+            pacman.x--;
+            document.getElementById('pacman').style.background = "url('pacman-left.gif') no-repeat 50% 50%";
+            document.getElementById('pacman').style.backgroundSize = "cover";
+        }   
+        else if(e.keyCode == 39 && world[pacman.y][pacman.x+1] !=2) {
+            pacman.x++;
+            document.getElementById('pacman').style.background = "url('pacman.gif') no-repeat 50% 50%";
+            document.getElementById('pacman').style.backgroundSize = "cover";
+        }
+        else if(e.keyCode == 38 && world[pacman.y-1][pacman.x] !=2) {
+            pacman.y--;
+            document.getElementById('pacman').style.background = "url('pacman-up.gif') no-repeat 50% 50%";
+            document.getElementById('pacman').style.backgroundSize = "cover";
+        }
+        else if(e.keyCode == 40 && world[pacman.y+1][pacman.x] !=2) {
+            pacman.y++;
+            document.getElementById('pacman').style.background = "url('pacman-down.gif') no-repeat 50% 50%";
+            document.getElementById('pacman').style.backgroundSize = "cover";
+        }
+
+        if(world[pacman.y][pacman.x] == 1) {
+            world[pacman.y][pacman.x] = 0;
+            score+=10;
+            displayWorld();
+            displayScore();
+        }
+        console.log(e.keyCode);
+        // moveGhosts();
+        displayPacman();
+    };
+    </script>
+</body>
+</html>
